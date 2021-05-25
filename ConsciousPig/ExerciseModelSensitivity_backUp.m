@@ -139,7 +139,20 @@ s2 = [E3; E2];
 S2 = vecnorm(s2,2,1);
 Sens2 = reshape(S2,12,3);
 
-figure;
-plot(QPAS,'b','LineWidth',
+figure; hold on;
+for j=1:num_adj_pars
+    plot(Exercise.tinp,60*QPAS(j,:),'color',[[62 88 166]/255 0.4]);
+end
+plot(Exercise.tinp,60*QPAS(1,:),'k','LineWidth',2');
+xlim([Exercise.tinp(1) Exercise.tinp(end)]);
+ylabel('Myocardial Flow (ml/min)');
+xlabel('time (s)');
 
+C = inv(s1*s1');
+
+for ii = 1:36
+    for jj = 1:36
+        c(ii,jj) = C(ii,jj)/(sqrt(C(ii,ii)*C(jj,jj)));
+    end
+end
 
