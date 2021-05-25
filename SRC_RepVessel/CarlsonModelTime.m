@@ -1,14 +1,14 @@
 function [D, A, S_myo, S_meta, S_HR, R0, conv] = CarlsonModelTime(Params, P, D, MetSignal, HR, Dc, Pc, state)
 
-Cp      = Params(1);
-Ap      = Params(2);
-Bp      = Params(3);
-phi_p      = Params(4);
-C_myo = Params(8);  %% Myogenic signal coefficient
-C_met = Params(9);  %% Myogenic signal coefficient
-C_HR = Params(10);  %% Myogenic signal coefficient
-C0 = Params(11);    %% Constant determining the half maximal saturation
-HR0 = Params(12);
+Cp          = Params(1);
+Ap          = Params(2);
+Bp          = Params(3);
+phi_p       = Params(4);
+C_myo       = Params(8);  %% Myogenic signal coefficient
+C_met       = Params(9);  %% Myogenic signal coefficient
+C_HR        = Params(10);  %% Myogenic signal coefficient
+C0          = Params(11);    %% Constant determining the half maximal saturation
+HR0         = Params(12);
 
 R0 = (Ap - Bp)/pi * ( atan(-phi_p/Cp) + pi/2 ) + Bp;
 
@@ -31,7 +31,7 @@ gA = 1/tA;
 
 for i = 1:length(P)
     
-    X0 = [Dc, Ac];
+    X0 = [100, 0.5];
     
     V.MetSignal = MetSignal(i);
     V.Params = Params(:);

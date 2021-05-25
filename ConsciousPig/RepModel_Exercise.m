@@ -1,4 +1,4 @@
-function [DE, ActE, S_myo, S_meta, S_HR] = RepModel_Exercise(Exercise, Control, layer, x, MetSignal, k)
+function [DE, ActE, S_myo, S_meta, S_HR] = RepModel_Exercise(Exercise, Control, layer, x, MetSignal)
 
 state = 'normal';
 %%%%%%%%%%%%%% Preparation
@@ -14,12 +14,12 @@ switch MetSignal
         
 end
 
-Exercise = MetabolicSignalCalc_Exercise(Exercise, S0, MetSignal, k);
+Exercise = MetabolicSignalCalc_Exercise(Exercise, S0, MetSignal);
 
 %%%%%%%%%%%%%% Control
 
-eval(['Exercise.Dexp = Exercise.',layer,'.D(',num2str(k),');']);
-eval(['Exercise.Ptm = Exercise.',layer,'.Ptm(',num2str(k),');']);
+eval(['Exercise.Dexp = Exercise.',layer,'.D;']);
+eval(['Exercise.Ptm = Exercise.',layer,'.Ptm;']);
 eval(['MetSignalC = Exercise.',layer,'.MetSignal;']);
 
 eval(['Control.Dexp = Control.',layer,'.D(4);']);
@@ -27,6 +27,6 @@ eval(['Control.Ptm = Control.',layer,'.Ptm(4);']);
 Dc = Control.Dexp;
 Pc = Control.Ptm;
 
-[DE, ActE, S_myo, S_meta, S_HR] = CarlsonModelTime(x, Exercise.Ptm, Exercise.Dexp, MetSignalC, Exercise.HR(k), Dc, Pc, state);
+[DE, ActE, S_myo, S_meta, S_HR] = CarlsonModelTime(x, Exercise.Ptm, Exercise.Dexp, MetSignalC, Exercise.HR, Dc, Pc, state);
 
 end

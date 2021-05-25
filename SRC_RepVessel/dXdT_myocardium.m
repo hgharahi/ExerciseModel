@@ -26,9 +26,9 @@ P23  = X(8);
 P_PV = X(9); % penetrating vein pressure
 
 % CALCULATIONS 
-V11 = max(P.cf1*((P11 - P_im1)*P.C11)+P.V01, P.Vc);
+V11 = max(P.cf1*((P11 - P_im1)*P.C11+P.V01), P.Vc);
 
-V21 = P.cf1*((P21 - P_im1)*P.C2)+P.V02;
+V21 = P.cf1*((P21 - P_im1)*P.C2+P.V02);
 R11 = P.rf1*P.R01*(P.V01/V11).^2;
 R21 = P.rf1*P.R02*(P.V02/V21).^2;
 Rm1 = P.R0m*(P.gamma*R11/P.R01 + (1-P.gamma)*R21/P.R02);
@@ -36,8 +36,8 @@ Q11 = (P_PA - P11)/R11;
 Qm1 = (P11 - P21)/Rm1;
 % Q21 = (P21 - P_PV)/R21;
 
-V12 = max(P.cf2*((P12 - P_im2)*P.C12)+P.V01, P.Vc);
-V22 = P.cf2*((P22 - P_im2)*P.C2)+P.V02;
+V12 = max(P.cf2*((P12 - P_im2)*P.C12+P.V01), P.Vc);
+V22 = P.cf2*((P22 - P_im2)*P.C2+P.V02);
 R12 = P.rf2*P.R01*(P.V01/V12).^2;
 R22 = P.rf2*P.R02*(P.V02/V22).^2;
 Rm2 = P.R0m*(P.gamma*R12/P.R01 + (1-P.gamma)*R22/P.R02);

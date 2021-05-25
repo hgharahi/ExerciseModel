@@ -23,10 +23,10 @@ Results.V11 = P.cf1*((Results.P11 - P_im1)*P.C11+P.V01);
 Results.V11(Results.V11<P.Vc) = P.Vc;
 
 V21 = P.cf1*((Results.P21 - P_im1)*P.C2+P.V02);
-R11 = P.rf1*P.R01*(P.V01./Results.V11).^2;
+Results.R11 = P.rf1*P.R01*(P.V01./Results.V11).^2;
 R21 = P.rf1*P.R02*(P.V02./V21).^2;
-Rm1 = P.R0m*(P.gamma*R11/P.R01 + (1-P.gamma)*R21/P.R02);
-Results.Q11 = (Results.P_PA - Results.P11)./R11;
+Rm1 = P.R0m*(P.gamma*Results.R11/P.R01 + (1-P.gamma)*R21/P.R02);
+Results.Q11 = (Results.P_PA - Results.P11)./Results.R11;
 Results.Qm1 = (Results.P11 - Results.P21)./Rm1;
 % Results.Q21 = (Results.P21 - Results.P_PV)./R21;
 
@@ -34,10 +34,10 @@ Results.V12 = P.cf2*((Results.P12 - P_im2)*P.C12+P.V01);
 Results.V12(Results.V12<P.Vc) = P.Vc;
 
 V22 = P.cf2*((Results.P22 - P_im2)*P.C2+P.V02);
-R12 = P.rf2*P.R01*(P.V01./Results.V12).^2;
+Results.R12 = P.rf2*P.R01*(P.V01./Results.V12).^2;
 R22 = P.rf2*P.R02*(P.V02./V22).^2;
-Rm2 = P.R0m*(P.gamma*R12/P.R01 + (1-P.gamma)*R22/P.R02);
-Results.Q12 = (Results.P_PA - Results.P12)./R12;
+Rm2 = P.R0m*(P.gamma*Results.R12/P.R01 + (1-P.gamma)*R22/P.R02);
+Results.Q12 = (Results.P_PA - Results.P12)./Results.R12;
 Results.Qm2 = (Results.P12 - Results.P22)./Rm2;
 % Results.Q22 = (Results.P22 - Results.P_PV)./R22;
 
@@ -45,10 +45,10 @@ Results.V13 = (Results.P13 - P_im3)*P.C13+P.V01;
 Results.V13(Results.V13<P.Vc) = P.Vc;
 
 V23 = (Results.P23 - P_im3)*P.C2+P.V02;
-R13 = P.R01*(P.V01./Results.V13).^2;
+Results.R13 = P.R01*(P.V01./Results.V13).^2;
 R23 = P.R02*(P.V02./V23).^2;
-Rm3 = P.R0m*(P.gamma*R13/P.R01 + (1-P.gamma)*R23/P.R02);
-Results.Q13 = (Results.P_PA - Results.P13)./R13;
+Rm3 = P.R0m*(P.gamma*Results.R13/P.R01 + (1-P.gamma)*R23/P.R02);
+Results.Q13 = (Results.P_PA - Results.P13)./Results.R13;
 Results.Qm3 = (Results.P13 - Results.P23)./Rm3;
 % Results.Q23 = (Results.P23 - Results.P_PV)./R23;
 

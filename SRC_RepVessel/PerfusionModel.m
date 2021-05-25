@@ -1,30 +1,38 @@
-function Results = PerfusionModel(Testset, Params, t_final, flg)
+function Results = PerfusionModel(Case, flg)
 
 %% Exercise is modeled using the aortic pressure as the input pressure.
-Xo_myo = [Testset.AoP(1) 1 50 50 85 85 120 120 5]'; % for 2713 Resting
+Xo_myo = [Case.AoP(1) 1 50 50 85 85 120 120 5]'; % for 2713 Resting
 
-[t,X] = ode15s(@dXdT_myocardium,[0 t_final],Xo_myo,[], Testset, Params);
+t_final = Case.t(end);
+Params = Case.Params;
 
-Results = PostProcessing( t, X, Testset, Params);
+[t,X] = ode15s(@dXdT_myocardium,[0 t_final],Xo_myo,[], Case, Params);
+
+Results = PostProcessing( t, X, Case, Params);
 Results.t = t;
 
-t_idx = t>t_final-2*Testset.T & t<=t_final;
+t_idx = t>t_final-2*Case.T & t<=t_final;
 Dt = diff(Results.t);
 
-Qendo = Results.Q13(t>t_final-2*Testset.T & t<=t_final);
-Qendo = sum(Results.Q13(t_idx).*Dt(t_idx(2:end)))/(2*Testset.T);
+Qendo = Results.Q13(t>t_final-2*Case.T & t<=t_final);
+Qendo = sum(Results.Q13(t_idx).*Dt(t_idx(2:end)))/(2*Case.T);
 
-Qmid = Results.Q12(t>t_final-2*Testset.T & t<t_final);
-Qmid = sum(Results.Q12(t_idx).*Dt(t_idx(2:end)))/(2*Testset.T);
+Qmid = Results.Q12(t>t_final-2*Case.T & t<t_final);
+Qmid = sum(Results.Q12(t_idx).*Dt(t_idx(2:end)))/(2*Case.T);
 
-Qepi = Results.Q11(t>t_final-2*Testset.T & t<t_final);
-Qepi = sum(Results.Q11(t_idx).*Dt(t_idx(2:end)))/(2*Testset.T);
+Qepi = Results.Q11(t>t_final-2*Case.T & t<t_final);
+Qepi = sum(Results.Q11(t_idx).*Dt(t_idx(2:end)))/(2*Case.T);
 
-disp(['ENDO/EPI = ',num2str(Qendo/Qepi)]);
-disp(['ENDO/MID = ',num2str(Qendo/Qmid)]);
+
 Results.ENDOEPI = Qendo/Qepi;
 
 if flg==1
+    
+    
+    disp(['ENDO/EPI = ',num2str(Qendo/Qepi)]);
+    disp(['ENDO/MID = ',num2str(Qendo/Qmid)]);
+    
+    
     h1 = figure;hold on;
     plot(t,60*Results.Q13,'b','LineWidth',2);
     plot(t,60*Results.Q12,'g','LineWidth',2);
@@ -41,9 +49,10 @@ if flg==1
     h2 = figure; hold on;
     yyaxis left
     plot(t,60*X(:,2),'linewidth',1.5);
+    plot(Case.t,Case.Qexp,'linewidth',3,'Color',[0 0 0 0.4]);
     ylabel('Myocardial Flow (ml/min)');
     yyaxis right
-    plot(Testset.t,Testset.PLV,'Color',[1 0 0 0.4],'linewidth',1.5);
+    plot(Case.t,Case.PLV,'Color',[1 0 0 0.4],'linewidth',1.5);
     ylabel('Left Ventricular Pressure (mmHg)');
     set(gca,'Fontsize',14);
     xlim([5 10]);
