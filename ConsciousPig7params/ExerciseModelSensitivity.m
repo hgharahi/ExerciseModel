@@ -132,4 +132,4 @@ xlim([Rest.tinp(1) Rest.tinp(end)]);
 ylabel('Myocardial Flow (ml/min)');
 xlabel('time (s)');
 
-adjust_pars = adjustables( find( [Sens1+Sens2'] >0.4) );
+adjust_pars = adjustables( find( [Sens1+Sens2'] >0.05) );

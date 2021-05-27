@@ -8,7 +8,7 @@ C_R12 = Rn*(Case.mid.D/100)^(-4);
 C_R13 = Rn*(Case.endo.D/100)^(-4);
 
 t_final = Case.Results.t(end);
-t_idx = Case.Results.t>t_final-8*Case.T & Case.Results.t<=t_final;
+t_idx = Case.Results.t>t_final-4*Case.T & Case.Results.t<=t_final;
 t = Case.Results.t(t_idx);
 Case.tinp = linspace(t(1),t(end),300);
 Case.Qpa = interp1(t,Case.Results.Q_PA(t_idx),Case.tinp');

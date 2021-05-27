@@ -68,5 +68,5 @@ Dc = [DcC, DcA, DcD];
 if sum(isnan(DMod)) || sum(convC+convA+convD)|| sum([sum((Dp-DExp)<0),sum((DExp-Dc)<0)])
     ER = 1000;
 else
-    ER = norm((DExp - DMod)./DExp); % + 1000*(x(2)<x(3));
+    ER = norm((DExp - DMod)); % + 1000*(x(2)<x(3));
 end
