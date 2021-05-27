@@ -25,6 +25,7 @@ Qepi = sum(Results.Q11(t_idx).*Dt(t_idx(2:end)))/(2*Case.T);
 
 
 Results.ENDOEPI = Qendo/Qepi;
+Results.ENDOMID = Qendo/Qmid;
 
 if flg==1
     

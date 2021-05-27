@@ -110,9 +110,9 @@ while err>1e-3 && c<100
     Exercise =   Calculations_Exercise(Exercise, 'Exercise');
        
     err = abs(QPA - Exercise.QPA);
-    QPA = Exercise.QPA;
+    QPA = Exercise.QPA
     
-    c = c+1;
+    c = c+1
     
 end
 

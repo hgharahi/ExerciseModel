@@ -48,10 +48,12 @@ while err>1e-3 && c<100
 end
 QPAS = interp1(Case.Results.t,   Case.Results.Q_PA, Case.t);
 ENDOEPI = Case.Results.ENDOEPI;
+ENDOMID = Case.Results.ENDOMID;
 
 r = 1./Case.Qexp(Case.t>2).* (QPAS(Case.t>2)' - Case.Qexp(Case.t>2))*1/(sqrt(length(Case.Qexp(Case.t>2))));
 E1 = r'*r;
 E2 = abs(ENDOEPI - 0.95);
-obj = E1 + E2;
+E3 = abs(ENDOMID - 0.975);
+obj = E1 + E2 + 0.5*E3;
 
 return;
