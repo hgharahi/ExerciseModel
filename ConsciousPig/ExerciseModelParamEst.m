@@ -19,18 +19,18 @@ Init.Hgb        = Control.Hgb(k);
 Init.HCT        = Control.HCT(k);
 Init.VisRatio   = Control.VisRatio(k);
 Init.LVweight   = Control.LVweight;
-Init.Exercise_LvL = 1.00;
+Init.Exercise_LvL = 1.34;
 
-MVO2 = 65;
+MVO2 = 59.5395;
 Init.MVO2 = Init.Exercise_LvL*MVO2;
 
 Init.Params = PerfusionModel_ParamSet();
 
-Init.t = tdata_R;
+Init.t = tdata_E;
 Init.dt = mean(diff(Init.t));
-Init.AoP = AoP_R;
-Init.PLV = PLV_R;
-Init.Qexp = Flow_R;
+Init.AoP = AoP_E;
+Init.PLV = PLV_E;
+Init.Qexp = Flow_E;
 [~, Init.T] = LeftVenPerssure(Init.AoP,Init.t,Init.dt);
 Init.HR = 60/Init.T;
 
@@ -47,16 +47,16 @@ y0 = x(adjust_pars);
 % options = optimoptions('fmincon','Display','iter','Algorithm','sqp');
 p = gcp('nocreate'); % If no pool, do not create new one.
 if isempty( p )==1
-    parpool(4);
+    parpool(36);
 end
 
 pctRunOnAll warning('off', 'all');
 
-gaoptions = optimoptions('ga','MaxGenerations',100,'Display','iter','CreationFcn','gacreationlinearfeasible','MutationFcn', ...
+gaoptions = optimoptions('ga','MaxGenerations',200,'Display','iter','CreationFcn','gacreationlinearfeasible','MutationFcn', ...
     @mutationadaptfeasible);
     gaoptions = optimoptions(gaoptions,'UseParallel',true);
     gaoptions = optimoptions(gaoptions,'PopulationSize',30);
-    gaoptions = optimoptions(gaoptions,'FunctionTolerance',1e-8);
+    gaoptions = optimoptions(gaoptions,'FunctionTolerance',1e-4);
     gaoptions = optimoptions(gaoptions,'OutputFcn',@GA_DISP);
     
 objfun = @(y) ExerciseModelObjFun(y, Init, xendo, xmid, xepi, adjust_pars, Control, MetSignal);
@@ -83,42 +83,42 @@ end
 
 %% Initialize
 
-Rest = Init;
+Exercise = Init;
 
-QPA = Rest.QPA;
+QPA = Exercise.QPA;
 
 %%% Run State
 
 err = 10;
 c = 1;
-while err>1e-3 && c<15
+while err>1e-3 && c<100
     
-    [Rest.endo.D, Act_Endo_E, S_myo_Endo_E, S_meta_Endo_E, S_HR_Endo_E] = RepModel_Exercise(Rest, Control, 'endo', xendo_S, MetSignal);
+    [Exercise.endo.D, Act_Endo_E, S_myo_Endo_E, S_meta_Endo_E, S_HR_Endo_E] = RepModel_Exercise(Exercise, Control, 'endo', xendo_S, MetSignal);
     
-    [Rest.mid.D, Act_Mid_E, S_myo_Mid_E, S_meta_Mid_E, S_HR_Mid_E] = RepModel_Exercise(Rest, Control, 'mid', xmid_S, MetSignal);
+    [Exercise.mid.D, Act_Mid_E, S_myo_Mid_E, S_meta_Mid_E, S_HR_Mid_E] = RepModel_Exercise(Exercise, Control, 'mid', xmid_S, MetSignal);
     
-    [Rest.epi.D, Act_Epi_E, S_myo_Epi_E, S_meta_Epi_E, S_HR_Epi_E] = RepModel_Exercise(Rest, Control, 'epi', xepi_S, MetSignal);
+    [Exercise.epi.D, Act_Epi_E, S_myo_Epi_E, S_meta_Epi_E, S_HR_Epi_E] = RepModel_Exercise(Exercise, Control, 'epi', xepi_S, MetSignal);
     
-    [C11, C12, C13] = ComplianceResistance(Rest);
+    [C11, C12, C13] = ComplianceResistance(Exercise);
     
-    Rest.Params.C11 = 0.2*Rest.Params.C11 + 0.8*C11;
-    Rest.Params.C12 = 0.2*Rest.Params.C12 + 0.8*C12;
-    Rest.Params.C13 = 0.2*Rest.Params.C13 + 0.8*C13;
+    Exercise.Params.C11 = 0.5*Exercise.Params.C11 + 0.5*C11;
+    Exercise.Params.C12 = 0.5*Exercise.Params.C12 + 0.5*C12;
+    Exercise.Params.C13 = 0.5*Exercise.Params.C13 + 0.5*C13;
     
-    Rest.Results = PerfusionModel( Rest, 0);
+    Exercise.Results = PerfusionModel( Exercise, 0);
     
-    Rest =   Calculations_Exercise(Rest, 'Exercise');
+    Exercise =   Calculations_Exercise(Exercise, 'Exercise');
        
-    err = abs(QPA - Rest.QPA);
-    QPA = Rest.QPA;
+    err = abs(QPA - Exercise.QPA);
+    QPA = Exercise.QPA;
     
     c = c+1;
     
 end
 
-Rest.Results = PerfusionModel( Rest, 1);
-QPAS = interp1(Rest.Results.t,   Rest.Results.Q_PA, Rest.t);
-ENDOEPI = Rest.Results.ENDOEPI;
+Exercise.Results = PerfusionModel( Exercise, 1);
+QPAS = interp1(Exercise.Results.t,   Exercise.Results.Q_PA, Exercise.t);
+ENDOEPI = Exercise.Results.ENDOEPI;
 
 
-
+savePlots;
