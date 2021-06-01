@@ -8,56 +8,75 @@ load Sensitivity9.mat;
 
 %% Establish the baseline state
 % Assign baseline blood gas measurements from CPP=120 mmHg case (k = 5), Pig #i
+%% Establish the baseline state
+% Assign baseline blood gas measurements from CPP=120 mmHg case (k = 5), Pig #i
 k = 5;
-Init.ArtO2Cnt   = Control.ArtO2Cnt(k);
-Init.CVO2Cnt    = Control.CVO2Cnt(k);
-Init.ArtPO2     = Control.ArtPO2(k);
-Init.CvPO2      = Control.CvPO2(k);
-Init.ArtO2Sat   = Control.ArtO2Sat(k);
-Init.CvO2Sat    = Control.CvO2Sat(k);
-Init.Hgb        = Control.Hgb(k);
-Init.HCT        = Control.HCT(k);
-Init.VisRatio   = Control.VisRatio(k);
-Init.LVweight   = Control.LVweight;
-Init.Exercise_LvL = 1.34;
+InitR.ArtO2Cnt   = Control.ArtO2Cnt(k);
+InitR.CVO2Cnt    = Control.CVO2Cnt(k);
+InitR.ArtPO2     = Control.ArtPO2(k);
+InitR.CvPO2      = Control.CvPO2(k);
+InitR.ArtO2Sat   = Control.ArtO2Sat(k);
+InitR.CvO2Sat    = Control.CvO2Sat(k);
+InitR.Hgb        = Control.Hgb(k);
+InitR.HCT        = Control.HCT(k);
+InitR.VisRatio   = Control.VisRatio(k);
+InitR.LVweight   = Control.LVweight;
+InitR.Exercise_LvL = 1.00;
 
 MVO2 = 59.5395;
-Init.MVO2 = Init.Exercise_LvL*MVO2;
+InitR.MVO2 = InitR.Exercise_LvL*MVO2;
 
-Init.Params = PerfusionModel_ParamSet();
+InitR.Params = PerfusionModel_ParamSet();
 
-Init.t = tdata_E;
-Init.dt = mean(diff(Init.t));
-Init.AoP = AoP_E;
-Init.PLV = PLV_E;
-Init.Qexp = Flow_E;
-[~, Init.T] = LeftVenPerssure(Init.AoP,Init.t,Init.dt);
-Init.HR = 60/Init.T;
+InitR.t = tdata_R;
+InitR.dt = mean(diff(InitR.t));
+InitR.AoP = AoP_R;
+InitR.PLV = PLV_R;
+InitR.Qexp = Flow_R;
+[~, InitR.T] = LeftVenPerssure(InitR.AoP,InitR.t,InitR.dt);
+InitR.HR = 60/InitR.T;
 
-Init.Results = PerfusionModel( Init, 1);
-Init =   Calculations_Exercise(Init, 'Baseline');
+InitR.Results = PerfusionModel( InitR, 0);
+InitR =   Calculations_Exercise(InitR, 'Baseline');
+
 % 
-% ENDOEPI_Control = Init.Results.ENDOEPI;
-% QPA = Init.QPA;
+InitE = InitR;
+InitE.Exercise_LvL = 1.00;
 
+MVO2 = 59.5395;
+InitE.MVO2 = InitE.Exercise_LvL*MVO2;
 
+InitE.Params = PerfusionModel_ParamSet();
+
+InitE.t = tdata_E;
+InitE.dt = mean(diff(InitE.t));
+InitE.AoP = AoP_E;
+InitE.PLV = PLV_E;
+InitE.Qexp = Flow_E;
+[~, InitE.T] = LeftVenPerssure(InitE.AoP,InitE.t,InitE.dt);
+InitE.HR = 60/InitE.T;
+
+InitE.Results = PerfusionModel( InitE, 0);
+InitE =   Calculations_Exercise(InitE, 'Baseline');
+
+%% Setup the parameter estimation
 x = [xendo,xmid,xepi];
 y0 = x(adjust_pars);
 
-objfun = @(y) ExerciseModelObjFun2(y, Init, xendo, xmid, xepi, adjust_pars, Control, MetSignal);
+objfun = @(y) ExerciseModelObjFun2(y, InitR, InitE, xendo, xmid, xepi, adjust_pars, Control, MetSignal);
 
 x_all = [subendo.x;mid.x;subepi.x];
 
 yl = min(x_all(adjust_pars,:),[],2);
 yu = max(x_all(adjust_pars,:),[],2);
 
-% options = optimoptions('fmincon','Display','iter','Algorithm','sqp');
-p = gcp('nocreate'); % If no pool, do not create new one.
-if isempty( p )==1
-    parpool(36);
-end
+% % options = optimoptions('fmincon','Display','iter','Algorithm','sqp');
+% p = gcp('nocreate'); % If no pool, do not create new one.
+% if isempty( p )==1
+%     parpool(36);
+% end
 
-pctRunOnAll warning('off', 'all');
+% pctRunOnAll warning('off', 'all');
 
 gaoptions = optimoptions('ga','MaxGenerations',200,'Display','iter','CreationFcn','gacreationlinearfeasible','MutationFcn', ...
     @mutationadaptfeasible);
