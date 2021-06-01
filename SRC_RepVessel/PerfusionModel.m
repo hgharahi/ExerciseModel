@@ -48,18 +48,21 @@ if flg==1
 %     plot(Testset.t,Testset.AoP,'k-','linewidth',1.5);
     
     h2 = figure; hold on;
-    yyaxis left
     plot(t,60*X(:,2),'linewidth',1.5);
     plot(Case.t,Case.Qexp,'linewidth',3,'Color',[0 0 0 0.4]);
     ylabel('Myocardial Flow (ml/min)');
-    yyaxis right
-    plot(Case.t,Case.PLV,'Color',[1 0 0 0.4],'linewidth',1.5);
-    ylabel('Left Ventricular Pressure (mmHg)');
+%     ylim([-50 300]);
     set(gca,'Fontsize',14);
     xlim([5 10]);
     xlabel('time (s)');
-    left_color = [0 0 0];
-    right_color = [1 0 0];
-    set(h2,'defaultAxesColorOrder',[left_color; right_color]);
+    legend('Model','Data');
+    
+    h3 = figure; hold on;
+    plot(Case.t,Case.AoP,'linewidth',1.5);    
+    plot(Case.t,Case.PLV,'Color',[1 0 0 0.4],'linewidth',1.5);
+    ylabel('Pressure (mmHg)');
+    xlabel('time (s)');
+    legend('Aortic','LV');
+    ylim([-10 180]);
     
 end

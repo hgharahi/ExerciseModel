@@ -123,13 +123,27 @@ Sens2 = S2./max(S2);
 % Sens2 = reshape(S2,12,3);
 
 figure; hold on;
+p0 = plot(Rest.t,Rest.Qexp(:),'k','LineWidth',2');
+p1 = plot(Rest.t,60*QPAS(1,:),'r','LineWidth',2');
 for j=0:num_adj_pars
     plot(Rest.t,60*QPAS(j+1,:),'color',[[62 88 166]/255 0.4]);
 end
-plot(Rest.t,Rest.Qexp(:),'k','LineWidth',2');
-plot(Rest.t,60*QPAS(1,:),'r','LineWidth',2');
+% plot(Exercise.t,60*QPAS(1,:),'r','LineWidth',2');
 xlim([Rest.tinp(1) Rest.tinp(end)]);
 ylabel('Myocardial Flow (ml/min)');
 xlabel('time (s)');
+legend('Data','Model-Nominal','Model-Perturbed');
+uistack(p1,'top')
+uistack(p0,'top')
 
-adjust_pars = adjustables( find( [Sens1+Sens2'] >0.05) );
+SENSadj = 0*[xendo,xmid,xepi];
+SENS = [Sens1+Sens2'];
+
+for j = 1:length(adjustables)
+    
+    SENSadj(adjustables(j)) = SENS(j);
+
+end
+
+SENSadj = reshape(SENSadj,12,3);
+adjust_pars = adjustables( find( [Sens1+Sens2'] >0.3) );

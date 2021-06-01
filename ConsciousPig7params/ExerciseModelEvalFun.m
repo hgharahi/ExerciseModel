@@ -4,13 +4,13 @@ x = [xendo,xmid,xepi];
 for j = 1:length(adjust_pars)
     
     x(adjust_pars(j)) = y(j);
+
+end
+
     x = reshape(x,12,3);
     xendo_S = x(:,1);
     xmid_S = x(:,2);
     xepi_S = x(:,3);
-    
-end
-
 %% Read aortic and left venctricular pressure from the
 data_rest = xlsread('TuneExercisePig','2713 Resting','B9:D5005');
 data_exercise = xlsread('TuneExercisePig','2713 Exercise Level 2','B9:D5005');
@@ -62,9 +62,9 @@ QPA = Rest.QPA;
 
 err = 10;
 c = 1;
-while err>5e-3 && c<100
+while err>1e-3 && c<50
     
-    [Rest.endo.D, Rest.Act_Endo, R.S_myo_Endo, R.S_meta_Endo, R.S_HR_Endo] = RepModel_Exercise(Rest, Control, 'endo', xendo_S, MetSignal);
+    [Rest.endo.D, Rest.Act_Endo, Rest.S_myo_Endo, Rest.S_meta_Endo, Rest.S_HR_Endo] = RepModel_Exercise(Rest, Control, 'endo', xendo_S, MetSignal);
     
     [Rest.mid.D, Rest.Act_Mid, Rest.S_myo_Mid, Rest.S_meta_Mid, Rest.S_HR_Mid] = RepModel_Exercise(Rest, Control, 'mid', xmid_S, MetSignal);
     
@@ -124,7 +124,7 @@ QPA = Exercise.QPA;
 
 err = 10;
 c = 1;
-while err>1e-3 && c<100
+while err>1e-3 && c<50
     
     [Exercise.endo.D, Exercise.Act_Endo, Exercise.S_myo_Endo, Exercise.S_meta_Endo, Exercise.S_HR_Endo] = RepModel_Exercise(Exercise, Control, 'endo', xendo_S, MetSignal);
     
@@ -158,5 +158,78 @@ E1 = r'*r;
 E2 = abs(ENDOEPI - 0.95);
 E3 = abs(ENDOMID - 0.975);
 Exercise.obj = E1 + E2 + 0.5*E3;
+
+%% Plots
+
+figure;
+subplot(1,2,1);hold on
+scatter(1,60*Rest.QPA,'ok');hold on
+% scatter(2,60*Rest.QPA,'ok');
+scatter(2,60*Exercise.QPA,'ok','filled');
+set(gca,'xtick',[1,2,3],'xticklabel',{'Baseline','Exercise'},'Fontsize',12);
+ylabel('Myocardial Flow (ml/min)','Fontsize',12);
+axis([0.5 2.5 0 60*Exercise.QPA*1.3]);box on;pbaspect([1 2 1]);
+subplot(1,2,2);hold on
+scatter(1,Rest.Results.ENDOEPI,'ok');hold on
+scatter(2,Exercise.Results.ENDOEPI,'ok','filled');
+set(gca,'xtick',[1,2,3],'xticklabel',{'Baseline','Exercise'},'Fontsize',12);
+ylabel('ENDO/EPI Flow Ratio','Fontsize',12);
+axis([0.5 2.5 0 1.5]);box on;pbaspect([1 2 1]);
+
+
+figure;
+subplot(1,2,1);
+plot([1 2],[Rest.Act_Epi, Exercise.Act_Epi],'o-','MarkerEdgeColor','r',...
+    'MarkerFaceColor','r','LineWidth',2,'Color','r'); hold on;
+plot([1 2],[Rest.Act_Mid, Exercise.Act_Mid],'o-','MarkerEdgeColor','g',...
+    'MarkerFaceColor','g','LineWidth',2,'Color','g');
+plot([1 2],[Rest.Act_Endo, Exercise.Act_Endo],'o-','MarkerEdgeColor','b',...
+    'MarkerFaceColor','b','LineWidth',2,'Color','b');
+set(gca,'xtick',[1,2],'xticklabel',{'Rest','Exercise'},'Fontsize',12);
+axis([0.5 2.5 0 1.0]);ylabel('A (-)','Interpreter','Latex');pbaspect([1 2 1]);
+% legend('subepi','midwall','subendo');
+
+subplot(1,2,2);
+plot([1 2],[Rest.epi.D/100, Exercise.epi.D/100],'o-','MarkerEdgeColor','r',...
+    'MarkerFaceColor','r','LineWidth',2,'Color','r'); hold on;
+plot([1 2],[Rest.mid.D/100, Exercise.mid.D/100],'o-','MarkerEdgeColor','g',...
+    'MarkerFaceColor','g','LineWidth',2,'Color','g');
+plot([1 2],[Rest.endo.D/100, Exercise.endo.D/100],'o-','MarkerEdgeColor','b',...
+    'MarkerFaceColor','b','LineWidth',2,'Color','b');
+set(gca,'xtick',[1,2],'xticklabel',{'Rest','Exercise'},'Fontsize',12);
+axis([0.5 2.5 0.0 1.5]);ylabel('$\bar{D}$ (-)','Interpreter','Latex');pbaspect([1 2 1]);
+% legend('subepi','midwall','subendo');
+
+h1 = figure;
+set(h1,'Position',[10 10 1000 500]);
+subplot(1,3,1);
+plot([1 2],[Rest.S_myo_Epi, Exercise.S_myo_Epi],'o-','MarkerEdgeColor','r',...
+    'MarkerFaceColor','r','LineWidth',2,'Color','r'); hold on;
+plot([1 2],[Rest.S_myo_Mid, Exercise.S_myo_Mid],'o-','MarkerEdgeColor','g',...
+    'MarkerFaceColor','g','LineWidth',2,'Color','g');
+plot([1 2],[Rest.S_myo_Endo, Exercise.S_myo_Endo],'o-','MarkerEdgeColor','b',...
+    'MarkerFaceColor','b','LineWidth',2,'Color','b');
+set(gca,'xtick',[1,2],'xticklabel',{'Rest','Exercise'},'Fontsize',12);
+xlim([0.5 2.5]);ylabel('Smyo','Fontsize',12);pbaspect([1 2 1]);
+
+subplot(1,3,2);
+plot([1 2],[Rest.S_meta_Epi, Exercise.S_meta_Epi],'o-','MarkerEdgeColor','r',...
+    'MarkerFaceColor','r','LineWidth',2,'Color','r'); hold on;
+plot([1 2],[Rest.S_meta_Mid, Exercise.S_meta_Mid],'o-','MarkerEdgeColor','g',...
+    'MarkerFaceColor','g','LineWidth',2,'Color','g');
+plot([1 2],[Rest.S_meta_Endo, Exercise.S_meta_Endo],'o-','MarkerEdgeColor','b',...
+    'MarkerFaceColor','b','LineWidth',2,'Color','b');
+set(gca,'xtick',[1,2],'xticklabel',{'Rest','Exercise'},'Fontsize',12);
+xlim([0.5 2.5]);ylabel('S_{meta}','Fontsize',12);pbaspect([1 2 1]);
+
+subplot(1,3,3);
+plot([1 2],[Rest.S_HR_Epi, Exercise.S_HR_Epi],'o-','MarkerEdgeColor','r',...
+    'MarkerFaceColor','r','LineWidth',2,'Color','r'); hold on;
+plot([1 2],[Rest.S_HR_Mid, Exercise.S_HR_Mid],'o-','MarkerEdgeColor','g',...
+    'MarkerFaceColor','g','LineWidth',2,'Color','g');
+plot([1 2],[Rest.S_HR_Endo, Exercise.S_HR_Endo],'o-','MarkerEdgeColor','b',...
+    'MarkerFaceColor','b','LineWidth',2,'Color','b');
+set(gca,'xtick',[1,2],'xticklabel',{'Rest','Exercise'},'Fontsize',12);
+xlim([0.5 2.5]);ylabel('S_{HR}','Fontsize',12);pbaspect([1 2 1]);
 
 return;

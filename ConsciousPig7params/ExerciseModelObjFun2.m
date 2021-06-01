@@ -27,7 +27,7 @@ QPA = Rest.QPA;
 
 err = 10;
 c = 1;
-while err>5e-3 && c<100
+while err>1e-3 && c<50
     
     [Rest.endo.D, Rest.Act_Endo, R.S_myo_Endo, R.S_meta_Endo, R.S_HR_Endo] = RepModel_Exercise(Rest, Control, 'endo', xendo_S, MetSignal);
     
@@ -37,9 +37,9 @@ while err>5e-3 && c<100
     
     [C11, C12, C13] = ComplianceResistance(Rest);
     
-    Rest.Params.C11 = C11;
-    Rest.Params.C12 = C12;
-    Rest.Params.C13 = C13;
+    Rest.Params.C11 = 0.2*Rest.Params.C11 + 0.8*C11;
+    Rest.Params.C12 = 0.2*Rest.Params.C12 + 0.8*C12;
+    Rest.Params.C13 = 0.2*Rest.Params.C13 + 0.8*C13;
     
     Rest.Results = PerfusionModel( Rest, 0);
     
@@ -72,7 +72,7 @@ QPA = Exercise.QPA;
 
 err = 10;
 c = 1;
-while err>5e-3 && c<100
+while err>1e-3 && c<50
     
     [Exercise.endo.D, Exercise.Act_Endo, Exercise.S_myo_Endo, Exercise.S_meta_Endo, Exercise.S_HR_Endo] = RepModel_Exercise(Exercise, Control, 'endo', xendo_S, MetSignal);
     
@@ -82,9 +82,9 @@ while err>5e-3 && c<100
     
     [C11, C12, C13] = ComplianceResistance(Exercise);
     
-    Exercise.Params.C11 = 0.5*Exercise.Params.C11 + 0.5*C11;
-    Exercise.Params.C12 = 0.5*Exercise.Params.C12 + 0.5*C12;
-    Exercise.Params.C13 = 0.5*Exercise.Params.C13 + 0.5*C13;
+    Exercise.Params.C11 = 0.2*Exercise.Params.C11 + 0.8*C11;
+    Exercise.Params.C12 = 0.2*Exercise.Params.C12 + 0.8*C12;
+    Exercise.Params.C13 = 0.2*Exercise.Params.C13 + 0.8*C13;
     
     Exercise.Results = PerfusionModel( Exercise, 0);
     
@@ -100,6 +100,7 @@ end
 Exercise.Results = PerfusionModel( Exercise, 1);
 QPAS = interp1(Exercise.Results.t,   Exercise.Results.Q_PA, Exercise.t);
 ENDOEPI = Exercise.Results.ENDOEPI;
+ENDOMID = Exercise.Results.ENDOMID;
 
 r = 1./Exercise.Qexp(Exercise.t>2).* (QPAS(Exercise.t>2)' - Exercise.Qexp(Exercise.t>2))*1/(sqrt(length(Exercise.Qexp(Exercise.t>2))));
 E1 = r'*r;
