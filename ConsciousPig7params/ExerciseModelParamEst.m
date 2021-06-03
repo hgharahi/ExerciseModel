@@ -60,8 +60,11 @@ InitE.Results = PerfusionModel( InitE, 0);
 InitE =   Calculations_Exercise(InitE, 'Baseline');
 
 %% Setup the parameter estimation
+popsize = 30;
+maxgen = 200;
+y0 = zeros(popsize,length(adjust_pars));
+
 x = [xendo,xmid,xepi];
-y0 = x(adjust_pars);
 
 objfun = @(y) ExerciseModelObjFun2(y, InitR, InitE, xendo, xmid, xepi, adjust_pars, Control, MetSignal);
 
@@ -71,10 +74,16 @@ x_all = [subendo.x;mid.x;subepi.x];
 % yu = max(x_all(adjust_pars,:),[],2);
 
 for j = 1:length(adjust_pars)
-        yl(j) = x(adjust_pars(j)) - 0.3*abs(x(adjust_pars(j)));
-        yu(j) = x(adjust_pars(j)) + 0.3*abs(x(adjust_pars(j)));
+    
+    yl(j) = x(adjust_pars(j)) - 0.3*abs(x(adjust_pars(j)));
+    yu(j) = x(adjust_pars(j)) + 0.3*abs(x(adjust_pars(j)));
 end
 
+for j = 1:popsize
+    
+    y0(j,:) = normrnd(x(adjust_pars)',0.1*abs(x(adjust_pars)'));
+    
+end
 % options = optimoptions('fmincon','Display','iter','Algorithm','sqp');
 p = gcp('nocreate'); % If no pool, do not create new one.
 if isempty( p )==1
@@ -85,6 +94,7 @@ pctRunOnAll warning('off', 'all');
 
 gaoptions = optimoptions('ga','MaxGenerations',200,'Display','iter','CreationFcn','gacreationlinearfeasible','MutationFcn', ...
     @mutationadaptfeasible);
+    gaoptions = optimoptions(gaoptions,'InitialPopulationMatrix',y0);
     gaoptions = optimoptions(gaoptions,'UseParallel',true);
     gaoptions = optimoptions(gaoptions,'PopulationSize',30);
     gaoptions = optimoptions(gaoptions,'FunctionTolerance',1e-4);
