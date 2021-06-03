@@ -26,7 +26,7 @@ Init.VisRatio   = Control.VisRatio(k);
 Init.LVweight   = Control.LVweight;
 Init.Exercise_LvL = 1.00;
 
-MVO2 = 65;
+MVO2 = 59.5395;
 Init.MVO2 = Init.Exercise_LvL*MVO2;
 
 Init.Params = PerfusionModel_ParamSet();
@@ -41,6 +41,7 @@ Init.HR = 60/Init.T;
 
 Init.Results = PerfusionModel( Init, 1);
 Init =   Calculations_Exercise(Init, 'Baseline');
+[C11, C12, C13] = ComplianceResistance(Init);
 % 
 % ENDOEPI_Control = Init.Results.ENDOEPI;
 % QPA = Init.QPA;
@@ -53,7 +54,7 @@ for j=0:num_adj_pars
     if j>0
         
         x = [xendo,xmid,xepi];
-        x(adjustables(j)) = x(adjustables(j)) + 0.1*x(adjustables(j));
+        x(adjustables(j)) = x(adjustables(j)) + 0.2*x(adjustables(j));
         x = reshape(x,12,3);
         xendo_S = x(:,1);
         xmid_S = x(:,2);
@@ -75,7 +76,7 @@ for j=0:num_adj_pars
     
     err = 10;
     c = 1;
-    while err>1e-3 && c<15
+    while err>1e-3 && c<50
         
     [Rest.endo.D, Act_Endo_E, S_myo_Endo_E, S_meta_Endo_E, S_HR_Endo_E] = RepModel_Exercise(Rest, Control, 'endo', xendo_S, MetSignal);
     
@@ -98,7 +99,7 @@ for j=0:num_adj_pars
     err = abs(QPA - Rest.QPA);
     QPA = Rest.QPA;
         
-        c = c+1;
+        c = c+1
         
     end
     QPAS(j+1,:) = interp1(Rest.Results.t,   Rest.Results.Q_PA, Rest.t);
@@ -125,8 +126,12 @@ Sens2 = S2./max(S2);
 figure; hold on;
 p0 = plot(Rest.t,Rest.Qexp(:),'k','LineWidth',2');
 p1 = plot(Rest.t,60*QPAS(1,:),'r','LineWidth',2');
-for j=0:num_adj_pars
+for j=1:num_adj_pars
+    
+    [~, tmax] = max(60*QPAS(j+1,:));
+    text(Rest.t(tmax),60*max(QPAS(j+1,:)),num2str(adjustables(j)),'Color','r')
     plot(Rest.t,60*QPAS(j+1,:),'color',[[62 88 166]/255 0.4]);
+    
 end
 % plot(Exercise.t,60*QPAS(1,:),'r','LineWidth',2');
 xlim([Rest.tinp(1) Rest.tinp(end)]);
@@ -146,4 +151,4 @@ for j = 1:length(adjustables)
 end
 
 SENSadj = reshape(SENSadj,12,3);
-adjust_pars = adjustables( find( [Sens1+Sens2'] >0.3) );
+adjust_pars = adjustables( find( [Sens1+Sens2'] >0.1) );

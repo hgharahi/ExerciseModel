@@ -29,8 +29,8 @@ end
 x = [subendo.x;mid.x;subepi.x];
 xmean = mean(x,2);
 CoV = std(x./xmean,0,2);
-adjustables = find(CoV>0.5);
-fixed = find(CoV<=0.5);
+adjustables = find(CoV>0.3);
+fixed = find(CoV<=0.3);
 
 param_names = {'Cp', 'Ap', 'Bp', 'phi_p', 'phi_m', 'Cm', 'rho', 'C_myo', 'C_met', 'C_HR', 'C0', 'HR0'};
 

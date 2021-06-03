@@ -37,13 +37,16 @@ Rendo = (C_R13./mRendo)*Rendo;
 Rmid = (C_R12./mRmid)*Rmid;
 Repi = (C_R11./mRepi)*Repi;
 
+dPCdt = TwoPtDeriv(Case.endo.PC,mean(diff(t)));
+Cidx = find(abs(dPCdt)<50);
+
 C11 = abs((sqrt(Case.Params.rf1/(Case.Params.cf1)^2*Case.Params.R01./Repi)*Case.Params.V01-Case.Params.V01)./Case.epi.PC);
 C12 = abs((sqrt(Case.Params.rf2/(Case.Params.cf2)^2*Case.Params.R01./Rmid)*Case.Params.V01-Case.Params.V01)./Case.mid.PC);
-C13 = abs((sqrt(Case.Params.R01./Rendo)*Case.Params.V01-Case.Params.V01)./Case.endo.PC);
+C13 = abs((sqrt(Case.Params.R01./Rendo(Cidx))*Case.Params.V01-Case.Params.V01)./Case.endo.PC(Cidx));
 
 C11 = mean(interp1(t, C11, Case.tinp));
 C12 = mean(interp1(t, C12, Case.tinp));
-C13 = mean(interp1(t, C13, Case.tinp));
+C13 = mean(C13);
 
 return
 

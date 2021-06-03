@@ -4,13 +4,14 @@ x = [xendo,xmid,xepi];
 for j = 1:length(adjust_pars)
     
     x(adjust_pars(j)) = y(j);
-
-end
-
     x = reshape(x,12,3);
     xendo_S = x(:,1);
     xmid_S = x(:,2);
     xepi_S = x(:,3);
+
+end
+
+
 %% Read aortic and left venctricular pressure from the
 data_rest = xlsread('TuneExercisePig','2713 Resting','B9:D5005');
 data_exercise = xlsread('TuneExercisePig','2713 Exercise Level 2','B9:D5005');
@@ -72,9 +73,9 @@ while err>1e-3 && c<50
     
     [C11, C12, C13] = ComplianceResistance(Rest);
     
-    Rest.Params.C11 = C11;
-    Rest.Params.C12 = C12;
-    Rest.Params.C13 = C13;
+    Rest.Params.C11 = 0.2*Rest.Params.C11 + 0.8*C11;
+    Rest.Params.C12 = 0.2*Rest.Params.C12 + 0.8*C12;
+    Rest.Params.C13 = 0.2*Rest.Params.C13 + 0.8*C13;
     
     Rest.Results = PerfusionModel( Rest, 0);
     
@@ -134,9 +135,9 @@ while err>1e-3 && c<50
     
     [C11, C12, C13] = ComplianceResistance(Exercise);
     
-    Exercise.Params.C11 = 0.5*Exercise.Params.C11 + 0.5*C11;
-    Exercise.Params.C12 = 0.5*Exercise.Params.C12 + 0.5*C12;
-    Exercise.Params.C13 = 0.5*Exercise.Params.C13 + 0.5*C13;
+    Exercise.Params.C11 = 0.2*Exercise.Params.C11 + 0.8*C11;
+    Exercise.Params.C12 = 0.2*Exercise.Params.C12 + 0.8*C12;
+    Exercise.Params.C13 = 0.2*Exercise.Params.C13 + 0.8*C13;
     
     Exercise.Results = PerfusionModel( Exercise, 0);
     

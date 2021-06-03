@@ -43,15 +43,20 @@ while err>1e-3 && c<50
     
     Rest.Results = PerfusionModel( Rest, 0);
     
-    Rest =   Calculations_Exercise(Rest, 'Exercise');
-       
+    try
+        Rest =   Calculations_Exercise(Rest, 'Exercise');
+    catch
+        c = 100;
+        Rest.QPA = 100;
+    end
+    
     err = abs(QPA - Rest.QPA);
     QPA = Rest.QPA;
     
     c = c+1;
     
 end
-Rest.Results = PerfusionModel( Rest, 1);
+% Rest.Results = PerfusionModel( Rest, 1);
 QPAS = interp1(Rest.Results.t,   Rest.Results.Q_PA, Rest.t);
 ENDOEPI = Rest.Results.ENDOEPI;
 ENDOMID = Rest.Results.ENDOMID;
@@ -86,9 +91,12 @@ while err>1e-3 && c<50
     Exercise.Params.C12 = 0.2*Exercise.Params.C12 + 0.8*C12;
     Exercise.Params.C13 = 0.2*Exercise.Params.C13 + 0.8*C13;
     
-    Exercise.Results = PerfusionModel( Exercise, 0);
-    
-    Exercise =   Calculations_Exercise(Exercise, 'Exercise');
+    try
+        Exercise =   Calculations_Exercise(Exercise, 'Exercise');
+    catch
+        c = 100;
+        Exercise.QPA = 100;
+    end
        
     err = abs(QPA - Exercise.QPA);
     QPA = Exercise.QPA;
@@ -97,7 +105,7 @@ while err>1e-3 && c<50
     
 end
 
-Exercise.Results = PerfusionModel( Exercise, 1);
+% Exercise.Results = PerfusionModel( Exercise, 1);
 QPAS = interp1(Exercise.Results.t,   Exercise.Results.Q_PA, Exercise.t);
 ENDOEPI = Exercise.Results.ENDOEPI;
 ENDOMID = Exercise.Results.ENDOMID;

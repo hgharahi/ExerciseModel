@@ -3,7 +3,7 @@ clear;clc;close all;
 addpath('../SRC_Perfusion');
 addpath('../SRC_RepVessel');
 
-load Sensitivity9.mat;
+load Sensitivity10.mat;
 
 
 %% Establish the baseline state
@@ -41,7 +41,7 @@ InitR =   Calculations_Exercise(InitR, 'Baseline');
 
 % 
 InitE = InitR;
-InitE.Exercise_LvL = 1.00;
+InitE.Exercise_LvL = 1.34;
 
 MVO2 = 59.5395;
 InitE.MVO2 = InitE.Exercise_LvL*MVO2;
@@ -67,16 +67,21 @@ objfun = @(y) ExerciseModelObjFun2(y, InitR, InitE, xendo, xmid, xepi, adjust_pa
 
 x_all = [subendo.x;mid.x;subepi.x];
 
-yl = min(x_all(adjust_pars,:),[],2);
-yu = max(x_all(adjust_pars,:),[],2);
+% yl = min(x_all(adjust_pars,:),[],2);
+% yu = max(x_all(adjust_pars,:),[],2);
 
-% % options = optimoptions('fmincon','Display','iter','Algorithm','sqp');
-% p = gcp('nocreate'); % If no pool, do not create new one.
-% if isempty( p )==1
-%     parpool(36);
-% end
+for j = 1:length(adjust_pars)
+        yl(j) = x(adjust_pars(j)) - 0.3*abs(x(adjust_pars(j)));
+        yu(j) = x(adjust_pars(j)) + 0.3*abs(x(adjust_pars(j)));
+end
 
-% pctRunOnAll warning('off', 'all');
+% options = optimoptions('fmincon','Display','iter','Algorithm','sqp');
+p = gcp('nocreate'); % If no pool, do not create new one.
+if isempty( p )==1
+    parpool(36);
+end
+
+pctRunOnAll warning('off', 'all');
 
 gaoptions = optimoptions('ga','MaxGenerations',200,'Display','iter','CreationFcn','gacreationlinearfeasible','MutationFcn', ...
     @mutationadaptfeasible);
@@ -90,6 +95,18 @@ y = ga(objfun, length(adjust_pars), [], [], [], [], yl, yu, [], gaoptions) ;
 
 
 %% Post
+x = [xendo,xmid,xepi];
+for j = 1:length(adjust_pars)
+    
+    x(adjust_pars(j)) = y(j);
+    
+end
 
-[Rest, Exercise] = ExerciseModelEvalFun(y, Init,xendo,xmid,xepi,adjust_pars, Control, MetSignal);
+x = reshape(x,12,3);
+xendo = x(:,1);
+xmid = x(:,2);
+xepi = x(:,3);
 
+[Rest, Exercise] = ExerciseModelEvalFun2(xendo,xmid,xepi, Control, MetSignal);
+
+savePlots;

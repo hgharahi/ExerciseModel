@@ -42,9 +42,12 @@ MetOptions = {'QM','ATP','VariableSV','Generic','MVO2','QdS','Q','M2'};
 MetSignal = MetOptions{1};
 
 %% Read RepVessel Model Parameters
-xendo = mean(subendo.x,2);
-xmid = mean(mid.x,2);
-xepi = mean(subepi.x,2);
+% xendo = mean(subendo.x,2);
+% xmid = mean(mid.x,2);
+% xepi = mean(subepi.x,2);
+xendo = subendo.x(:,i);
+xmid = mid.x(:,i);
+xepi = subepi.x(:,i);
 
 %% Read aortic and left venctricular pressure from the
 data_rest = xlsread('TuneExercisePig','2713 Resting','B9:D5005');
