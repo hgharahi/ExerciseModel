@@ -57,7 +57,7 @@ InitE.Qexp = Flow_E;
 InitE.HR = 60/InitE.T;
 
 InitE.Results = PerfusionModel( InitE, 0);
-InitE =   Calculations_Exercise(InitE, 'Baseline');
+InitE =   Calculations_Exercise(InitE, 'NoBaseline');
 
 %% Setup the parameter estimation
 popsize = 30;

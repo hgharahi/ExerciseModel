@@ -6,6 +6,8 @@ Xo_myo = [Case.AoP(1) 1 50 50 85 85 120 120 5]'; % for 2713 Resting
 t_final = Case.t(end);
 Params = Case.Params;
 
+Case.dPLVdt = TwoPtDeriv(Case.PLV,Case.dt);
+
 [t,X] = ode15s(@dXdT_myocardium,[0 t_final],Xo_myo,[], Case, Params);
 
 Results = PostProcessing( t, X, Case, Params);

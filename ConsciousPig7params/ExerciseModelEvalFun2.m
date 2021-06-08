@@ -142,6 +142,7 @@ end
 Exercise.Results = PerfusionModel( Exercise, 1);
 QPAS = interp1(Exercise.Results.t,   Exercise.Results.Q_PA, Exercise.t);
 ENDOEPI = Exercise.Results.ENDOEPI;
+ENDOMID = Exercise.Results.ENDOMID;
 
 r = 1./Exercise.Qexp(Exercise.t>2).* (QPAS(Exercise.t>2)' - Exercise.Qexp(Exercise.t>2))*1/(sqrt(length(Exercise.Qexp(Exercise.t>2))));
 E1 = r'*r;

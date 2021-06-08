@@ -4,7 +4,7 @@ function f = dXdT_myocardium(t,X,measurements,P)
 
 P_in = interp1(measurements.t,measurements.AoP,t);
 P_LV = interp1(measurements.t,measurements.PLV,t);
-dPdT = interp1(measurements.t,TwoPtDeriv(measurements.PLV,measurements.dt),t);
+dPdT = interp1(measurements.t,measurements.dPLVdt,t);
 
 P_im1 = 1.2*0.167*P_LV;
 P_im2 = 1.2*0.500*P_LV;

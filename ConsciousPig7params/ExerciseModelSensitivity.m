@@ -126,10 +126,10 @@ Sens2 = S2./max(S2);
 figure; hold on;
 p0 = plot(Rest.t,Rest.Qexp(:),'k','LineWidth',2');
 p1 = plot(Rest.t,60*QPAS(1,:),'r','LineWidth',2');
-for j=1:num_adj_pars
+for j=0:num_adj_pars
     
     [~, tmax] = max(60*QPAS(j+1,:));
-    text(Rest.t(tmax),60*max(QPAS(j+1,:)),num2str(adjustables(j)),'Color','r')
+%     text(Rest.t(tmax),60*max(QPAS(j+1,:)),num2str(adjustables(j)),'Color','r')
     plot(Rest.t,60*QPAS(j+1,:),'color',[[62 88 166]/255 0.4]);
     
 end

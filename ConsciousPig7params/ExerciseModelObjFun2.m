@@ -29,7 +29,7 @@ err = 10;
 c = 1;
 while err>1e-3 && c<50
     
-    [Rest.endo.D, Rest.Act_Endo, R.S_myo_Endo, R.S_meta_Endo, R.S_HR_Endo] = RepModel_Exercise(Rest, Control, 'endo', xendo_S, MetSignal);
+    [Rest.endo.D, Rest.Act_Endo, Rest.S_myo_Endo, Rest.S_meta_Endo, Rest.S_HR_Endo] = RepModel_Exercise(Rest, Control, 'endo', xendo_S, MetSignal);
     
     [Rest.mid.D, Rest.Act_Mid, Rest.S_myo_Mid, Rest.S_meta_Mid, Rest.S_HR_Mid] = RepModel_Exercise(Rest, Control, 'mid', xmid_S, MetSignal);
     
@@ -91,6 +91,8 @@ while err>1e-3 && c<50
     Exercise.Params.C12 = 0.2*Exercise.Params.C12 + 0.8*C12;
     Exercise.Params.C13 = 0.2*Exercise.Params.C13 + 0.8*C13;
     
+    Exercise.Results = PerfusionModel( Exercise, 0);
+        
     try
         Exercise =   Calculations_Exercise(Exercise, 'Exercise');
     catch
